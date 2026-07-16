@@ -1,129 +1,72 @@
-import { Link } from "react-router-dom"
 import { useState } from "react"
 import jobsData from "../data/jobs"
+
+import SearchBar from "../components/SearchBar"
+import FilterBar from "../components/FilterBar"
+import FeaturedJobs from "../components/FeaturedJobs"
+import JobCard from "../components/JobCard"
+import Footer from "../components/Footer"
 
 function Home({ jobs }) {
 
   const jobList = jobs || jobsData
 
-
   const [search, setSearch] = useState("")
   const [category, setCategory] = useState("All")
 
-
-  const filteredJobs = jobList.filter((job)=>{
+  const filteredJobs = jobList.filter((job) => {
 
     const matchSearch =
-    job.title.toLowerCase()
-    .includes(search.toLowerCase())
-
+      job.title.toLowerCase().includes(search.toLowerCase())
 
     const matchCategory =
-    category === "All" ||
-    job.category === category
-
+      category === "All" ||
+      job.category === category
 
     return matchSearch && matchCategory
 
   })
 
-
   return (
 
     <div className="app">
 
-
       <h1>SkillJobs India</h1>
 
-
       <p>
-        Government, Private & Apprenticeship Jobs
+        Government, Private, ITI, Diploma &
+        Apprenticeship Jobs
       </p>
 
+      <FeaturedJobs />
 
-      <input
-      placeholder="Search Job..."
-      value={search}
-      onChange={(e)=>setSearch(e.target.value)}
+      <SearchBar
+        search={search}
+        setSearch={setSearch}
       />
 
-
-      <select
-      onChange={(e)=>setCategory(e.target.value)}
-      >
-
-        <option value="All">
-          All Jobs
-        </option>
-
-        <option value="Government">
-          Government
-        </option>
-
-        <option value="Private">
-          Private
-        </option>
-
-        <option value="Apprentice">
-          Apprentice
-        </option>
-
-      </select>
-
-
+      <FilterBar
+        category={category}
+        setCategory={setCategory}
+      />
 
       <h2>Latest Jobs</h2>
 
-
       {
-        filteredJobs.map((job,index)=>(
-
-
-          <div className="job" key={index}>
-
-
-            <h3>{job.title}</h3>
-
-
-            <p>
-              Company: {job.company}
-            </p>
-
-
-            <p>
-              Qualification: {job.qualification}
-            </p>
-
-
-            <p>
-              Category: {job.category}
-            </p>
-
-
-            <p>
-              Salary: {job.salary}
-            </p>
-
-
-            <Link to={`/job/${index}`}>
-              <button>
-                View Details
-              </button>
-            </Link>
-
-
-          </div>
-
-
+        filteredJobs.map((job, index) => (
+          <JobCard
+            key={index}
+            job={job}
+            index={index}
+          />
         ))
       }
 
+      <Footer />
 
     </div>
 
   )
-
 }
-
 
 export default Home
