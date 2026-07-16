@@ -1,4 +1,5 @@
 import { useState } from "react"
+
 import jobsData from "../data/jobs"
 
 import SearchBar from "../components/SearchBar"
@@ -7,66 +8,177 @@ import FeaturedJobs from "../components/FeaturedJobs"
 import JobCard from "../components/JobCard"
 import Footer from "../components/Footer"
 
+
+
 function Home({ jobs }) {
 
-  const jobList = jobs || jobsData
 
-  const [search, setSearch] = useState("")
-  const [category, setCategory] = useState("All")
+const jobList = jobs || jobsData
 
-  const filteredJobs = jobList.filter((job) => {
 
-    const matchSearch =
-      job.title.toLowerCase().includes(search.toLowerCase())
+const [search,setSearch] = useState("")
 
-    const matchCategory =
-      category === "All" ||
-      job.category === category
+const [category,setCategory] = useState("All")
 
-    return matchSearch && matchCategory
 
-  })
 
-  return (
 
-    <div className="app">
+const filteredJobs = jobList
 
-      <h1>SkillJobs India</h1>
+.filter((job)=>{
 
-      <p>
-        Government, Private, ITI, Diploma &
-        Apprenticeship Jobs
-      </p>
 
-      <FeaturedJobs />
+const text = (
 
-      <SearchBar
-        search={search}
-        setSearch={setSearch}
-      />
+job.title +
+" " +
+job.company +
+" " +
+job.location +
+" " +
+job.qualification
 
-      <FilterBar
-        category={category}
-        setCategory={setCategory}
-      />
+).toLowerCase()
 
-      <h2>Latest Jobs</h2>
 
-      {
-        filteredJobs.map((job, index) => (
-          <JobCard
-            key={index}
-            job={job}
-            index={index}
-          />
-        ))
-      }
 
-      <Footer />
+const matchSearch =
+text.includes(
+search.toLowerCase()
+)
 
-    </div>
 
-  )
+
+const matchCategory =
+
+category==="All" ||
+
+job.category===category
+
+
+
+return matchSearch && matchCategory
+
+
+
+})
+
+.sort((a,b)=>{
+
+
+if(a.isNew && !b.isNew)
+return -1
+
+
+if(!a.isNew && b.isNew)
+return 1
+
+
+return 0
+
+
+})
+
+
+
+
+
+return(
+
+
+<div className="app">
+
+
+<h1>
+🚀 SkillJobs India
+</h1>
+
+
+
+<p>
+Government, Private, ITI, Diploma &
+Apprenticeship Jobs
+</p>
+
+
+
+<FeaturedJobs />
+
+
+
+<SearchBar
+
+search={search}
+
+setSearch={setSearch}
+
+/>
+
+
+
+<FilterBar
+
+category={category}
+
+setCategory={setCategory}
+
+/>
+
+
+
+<h2>
+🔥 Latest Jobs
+</h2>
+
+
+
+
+{
+
+filteredJobs.length===0
+
+?
+
+<p>
+No Jobs Found
+</p>
+
+
+:
+
+
+filteredJobs.map((job,index)=>(
+
+
+<JobCard
+
+key={job.id || index}
+
+job={job}
+
+index={index}
+
+/>
+
+
+))
+
+
 }
+
+
+
+
+<Footer />
+
+
+</div>
+
+
+)
+
+
+}
+
 
 export default Home

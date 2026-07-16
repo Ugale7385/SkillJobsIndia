@@ -1,57 +1,181 @@
+import { Link, useNavigate } from "react-router-dom"
 
-import { Link } from "react-router-dom"
+import { auth } from "../firebase"
 
-function Navbar() {
+import { signOut } from "firebase/auth"
 
-  return (
-    <nav className="navbar">
-
-      <div className="logo">
-        <h2>🚀 SkillJobs India</h2>
-        <p>Jobs | Apprenticeship | Exams</p>
-      </div>
+import { useEffect, useState } from "react"
 
 
-      <div className="menu">
 
-        <Link to="/">Home</Link>
+function Navbar(){
 
-        <Link to="/government-jobs">
-          Government
-        </Link>
 
-        <Link to="/iti-jobs">
-          ITI Jobs
-        </Link>
+const [user,setUser]=useState(null)
 
-        <Link to="/diploma-jobs">
-          Diploma
-        </Link>
+const navigate = useNavigate()
 
-        <Link to="/private-jobs">
-          Private
-        </Link>
 
-        <Link to="/results">
-          Results
-        </Link>
 
-        <Link to="/admit-card">
-          Admit Card
-        </Link>
+useEffect(()=>{
 
-        <Link to="/mock-test">
-          Mock Test
-        </Link>
 
-        <Link to="/admin">
-          Admin
-        </Link>
+const checkUser = ()=>{
 
-      </div>
+setUser(auth.currentUser)
 
-    </nav>
-  )
 }
+
+
+checkUser()
+
+
+},[])
+
+
+
+const logout = async()=>{
+
+
+await signOut(auth)
+
+setUser(null)
+
+navigate("/login")
+
+
+}
+
+
+
+
+return(
+
+
+<nav className="navbar">
+
+
+<div className="logo">
+
+
+<h2>
+🚀 SkillJobs India
+</h2>
+
+
+<p>
+Jobs | Apprenticeship | Exams
+</p>
+
+
+</div>
+
+
+
+<div className="menu">
+
+
+<Link to="/">
+Home
+</Link>
+
+
+<Link to="/government-jobs">
+Government
+</Link>
+
+
+<Link to="/iti-jobs">
+ITI Jobs
+</Link>
+
+
+<Link to="/diploma-jobs">
+Diploma
+</Link>
+
+
+<Link to="/private-jobs">
+Private
+</Link>
+
+
+<Link to="/results">
+Results
+</Link>
+
+
+<Link to="/admit-card">
+Admit Card
+</Link>
+
+
+<Link to="/mock-test">
+Mock Test
+</Link>
+
+
+
+{
+
+user ?
+
+<>
+
+<Link to="/profile">
+👤 Profile
+</Link>
+
+
+<Link to="/saved-jobs">
+⭐ Saved Jobs
+</Link>
+
+
+<button onClick={logout}>
+Logout
+</button>
+
+
+</>
+
+
+:
+
+<>
+
+<Link to="/login">
+Login
+</Link>
+
+
+<Link to="/register">
+Register
+</Link>
+
+
+</>
+
+}
+
+
+
+<Link to="/admin">
+Admin
+</Link>
+
+
+
+</div>
+
+
+</nav>
+
+
+)
+
+
+}
+
 
 export default Navbar

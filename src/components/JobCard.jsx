@@ -1,45 +1,133 @@
 import { Link } from "react-router-dom"
 
-function JobCard({ job, index }) {
-  return (
-    <div className="job-card">
+import { auth } from "../firebase"
 
-      <div className="job-header">
-        <h2>{job.title}</h2>
-        <span className="category">{job.category}</span>
-      </div>
+import { saveJobFirebase } from "../services/savedJobs"
 
-      <p><strong>🏢 Company:</strong> {job.company}</p>
 
-      <p><strong>🎓 Qualification:</strong> {job.qualification}</p>
 
-      <p><strong>📍 Location:</strong> {job.location}</p>
+function JobCard({job,index}){
 
-      <p><strong>💰 Salary:</strong> {job.salary}</p>
 
-      <p><strong>📅 Last Date:</strong> {job.lastDate || "Not Available"}</p>
+const saveJob = async()=>{
 
-      <div className="job-buttons">
 
-        <Link to={`/job/${index}`}>
-          <button>View Details</button>
-        </Link>
+if(!auth.currentUser){
 
-        {
-          job.applyLink &&
-          <a
-            href={job.applyLink}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <button>Apply Now</button>
-          </a>
-        }
+alert("Please Login First")
 
-      </div>
+return
 
-    </div>
-  )
 }
+
+
+
+await saveJobFirebase(
+auth.currentUser.uid,
+job
+)
+
+
+alert("Job Saved")
+
+
+}
+
+
+
+return(
+
+
+<div className="job-card">
+
+
+
+{
+job.isNew &&
+<span className="new-badge">
+NEW
+</span>
+}
+
+
+
+{
+job.image &&
+
+<img
+src={job.image}
+width="100"
+alt="logo"
+/>
+
+}
+
+
+
+<h2>
+{job.title}
+</h2>
+
+
+
+<p>
+🏢 {job.company}
+</p>
+
+
+
+<p>
+🎓 {job.qualification}
+</p>
+
+
+
+<p>
+📍 {job.location}
+</p>
+
+
+
+<p>
+💰 {job.salary}
+</p>
+
+
+
+<p>
+📅 Last Date: {job.lastDate || "Not Available"}
+</p>
+
+
+
+
+<button onClick={saveJob}>
+⭐ Save Job
+</button>
+
+
+
+<br/><br/>
+
+
+
+<Link to={`/job/${job.id || index}`}>
+
+<button>
+View Details
+</button>
+
+</Link>
+
+
+
+</div>
+
+
+)
+
+
+}
+
 
 export default JobCard

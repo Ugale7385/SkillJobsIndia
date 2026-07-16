@@ -1,29 +1,84 @@
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDocs,
-  deleteDoc,
-  doc
-} from "firebase/firestore";
+import { 
+  getFirestore, 
+  collection, 
+  addDoc, 
+  getDocs, 
+  deleteDoc, 
+  doc,
+  updateDoc
+} from "firebase/firestore"
 
-import app from "../firebase";
 
-const db = getFirestore(app);
+import app from "../firebase"
 
-export async function addJob(job) {
-  await addDoc(collection(db, "jobs"), job);
+
+const db = getFirestore(app)
+
+
+export const jobsCollection = collection(db,"jobs")
+
+
+
+export const addJob = async(job)=>{
+
+  const result = await addDoc(
+    jobsCollection,
+    job
+  )
+
+  return result
+
 }
 
-export async function getJobs() {
-  const snapshot = await getDocs(collection(db, "jobs"));
 
-  return snapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data()
-  }));
+
+
+export const getJobs = async()=>{
+
+
+  const snapshot = await getDocs(
+    jobsCollection
+  )
+
+
+  const jobs = snapshot.docs.map((item)=>({
+
+    id:item.id,
+    ...item.data()
+
+  }))
+
+
+  return jobs
+
 }
 
-export async function deleteJob(id) {
-  await deleteDoc(doc(db, "jobs", id));
+
+
+
+export const deleteJob = async(id)=>{
+
+
+  await deleteDoc(
+    doc(db,"jobs",id)
+  )
+
+
+}
+
+
+
+
+export const updateJob = async(id,job)=>{
+
+
+  await updateDoc(
+
+    doc(db,"jobs",id),
+
+    job
+
+  )
+
+
 }

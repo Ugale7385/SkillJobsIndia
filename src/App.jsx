@@ -2,9 +2,7 @@ import { useState, useEffect } from "react"
 import { Routes, Route } from "react-router-dom"
 
 import Navbar from "./components/Navbar"
-import AdminPage from "./pages/AdminPage"
-
-import jobs from "./data/jobs"
+import BottomNav from "./components/BottomNav"
 
 import Home from "./pages/Home"
 import GovernmentJobs from "./pages/GovernmentJobs"
@@ -16,96 +14,117 @@ import AdmitCard from "./pages/AdmitCard"
 import MockTest from "./pages/MockTest"
 import JobDetails from "./pages/JobDetails"
 
+import AdminPage from "./pages/AdminPage"
 
-function App() {
+import UserLogin from "./pages/UserLogin"
+import Register from "./pages/Register"
+import SavedJobs from "./pages/SavedJobs"
+import Profile from "./pages/Profile"
+import JobAlerts from "./pages/JobAlerts"
 
-  const [jobList, setJobList] = useState(() => {
-
-    const savedJobs = localStorage.getItem("jobs")
-
-    return savedJobs ? JSON.parse(savedJobs) : jobs
-
-  })
-
-
-  useEffect(() => {
-
-    localStorage.setItem(
-      "jobs",
-      JSON.stringify(jobList)
-    )
-
-  }, [jobList])
+import { getJobs } from "./services/firestore"
 
 
-  return (
 
-    <div>
+function App(){
 
-      <Navbar />
 
-      <Routes>
+const [jobList,setJobList] = useState([])
 
-        <Route 
-          path="/" 
-          element={<Home jobs={jobList}/>} 
-        />
 
-        <Route 
-          path="/government-jobs" 
-          element={<GovernmentJobs/>} 
-        />
 
-        <Route 
-          path="/private-jobs" 
-          element={<PrivateJobs/>} 
-        />
+useEffect(()=>{
 
-        <Route 
-          path="/iti-jobs" 
-          element={<ITIJobs/>} 
-        />
 
-        <Route 
-          path="/diploma-jobs" 
-          element={<DiplomaJobs/>} 
-        />
+const loadJobs = async()=>{
 
-        <Route 
-          path="/results" 
-          element={<Results/>} 
-        />
+const data = await getJobs()
 
-        <Route 
-          path="/admit-card" 
-          element={<AdmitCard/>} 
-        />
+setJobList(data)
 
-        <Route 
-          path="/mock-test" 
-          element={<MockTest/>} 
-        />
-
-        <Route 
-          path="/job/:id" 
-          element={<JobDetails/>} 
-        />
-
-        <Route 
-          path="/admin" 
-          element={
-            <AdminPage 
-              jobList={jobList}
-              setJobList={setJobList}
-            />
-          } 
-        />
-
-      </Routes>
-
-    </div>
-
-  )
 }
+
+
+loadJobs()
+
+
+},[])
+
+
+
+
+return(
+
+<div>
+
+
+<Navbar />
+
+
+
+<Routes>
+
+
+<Route path="/" element={<Home jobs={jobList}/>}/>
+
+<Route path="/government-jobs" element={<GovernmentJobs/>}/>
+
+<Route path="/private-jobs" element={<PrivateJobs/>}/>
+
+<Route path="/iti-jobs" element={<ITIJobs/>}/>
+
+<Route path="/diploma-jobs" element={<DiplomaJobs/>}/>
+
+<Route path="/results" element={<Results/>}/>
+
+<Route path="/admit-card" element={<AdmitCard/>}/>
+
+<Route path="/mock-test" element={<MockTest/>}/>
+
+
+<Route path="/job/:id" element={<JobDetails/>}/>
+
+
+<Route
+path="/admin"
+element={
+<AdminPage
+jobList={jobList}
+setJobList={setJobList}
+/>
+}
+/>
+
+
+<Route path="/login" element={<UserLogin/>}/>
+
+
+<Route path="/register" element={<Register/>}/>
+
+
+<Route path="/saved-jobs" element={<SavedJobs/>}/>
+
+
+<Route path="/profile" element={<Profile/>}/>
+
+
+<Route path="/job-alerts" element={<JobAlerts/>}/>
+
+
+
+</Routes>
+
+
+
+<BottomNav />
+
+
+</div>
+
+)
+
+
+}
+
 
 export default App

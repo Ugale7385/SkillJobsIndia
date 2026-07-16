@@ -1,153 +1,279 @@
 import { useParams, Link } from "react-router-dom"
+import { useEffect,useState } from "react"
+
+import { getJobs } from "../services/firestore"
+
+import { auth } from "../firebase"
+
+import { saveJobFirebase } from "../services/savedJobs"
+
+
 
 function JobDetails(){
 
-  const { id } = useParams()
+
+const {id}=useParams()
 
 
-  const savedJobs = JSON.parse(
-    localStorage.getItem("jobs")
-  ) || []
-
-
-  const job = savedJobs[id]
-
-
-  if(!job){
-
-    return (
-
-      <div className="app">
-
-        <h2>
-          Job Not Found
-        </h2>
-
-        <Link to="/">
-          Go Home
-        </Link>
-
-      </div>
-
-    )
-
-  }
-
-
-  const shareJob = () => {
-
-    if(navigator.share){
-
-      navigator.share({
-
-        title: job.title,
-
-        text:
-        `${job.title} - ${job.company}`,
-
-        url:
-        window.location.href
-
-      })
-
-    }
-
-    else{
-
-      alert("Share option not supported")
-
-    }
-
-  }
+const [job,setJob]=useState(null)
 
 
 
-  return (
-
-    <div className="app">
-
-      <h1>
-        {job.title}
-      </h1>
+useEffect(()=>{
 
 
-      <div className="job">
+const load=async()=>{
 
 
-        {
-          job.image &&
-          <img
-            src={job.image}
-            width="120"
-            alt="Company Logo"
-          />
-        }
+const data = await getJobs()
 
 
-        <p>
-          <b>Company:</b> {job.company}
-        </p>
+
+const found = data.find(
+item=>item.id===id
+)
 
 
-        <p>
-          <b>Qualification:</b> {job.qualification}
-        </p>
+
+setJob(found)
 
 
-        <p>
-          <b>Category:</b> {job.category}
-        </p>
-
-
-        <p>
-          <b>Job Type:</b> {job.jobType}
-        </p>
-
-
-        <p>
-          <b>Salary:</b> {job.salary}
-        </p>
-
-
-        <p>
-          <b>Location:</b> {job.location}
-        </p>
-
-
-        <p>
-          <b>Last Date:</b> {job.lastDate}
-        </p>
-
-
-        <a 
-          href={job.applyLink}
-          target="_blank"
-          rel="noreferrer"
-        >
-
-          <button>
-            Apply Now
-          </button>
-
-        </a>
-
-
-        <br/><br/>
-
-
-        <button onClick={shareJob}>
-          Share Job
-        </button>
-
-
-      </div>
-
-
-    </div>
-
-  )
 
 }
+
+
+
+load()
+
+
+
+},[id])
+
+
+
+
+
+const saveJob = async()=>{
+
+
+if(!auth.currentUser){
+
+alert("Please Login First")
+
+return
+
+}
+
+
+
+await saveJobFirebase(
+auth.currentUser.uid,
+job
+)
+
+
+alert("Job Saved")
+
+
+}
+
+
+
+
+const shareJob=()=>{
+
+
+if(navigator.share){
+
+
+navigator.share({
+
+title:job.title,
+
+text:
+`${job.title} - ${job.company}`,
+
+url:
+window.location.href
+
+})
+
+
+}
+
+else{
+
+
+alert("Share not supported")
+
+
+}
+
+
+
+}
+
+
+
+
+if(!job)
+
+return <h2>Loading...</h2>
+
+
+
+
+return(
+
+
+<div className="app">
+
+
+<h1>
+{job.title}
+</h1>
+
+
+
+
+<div className="job">
+
+
+
+{
+
+job.image &&
+
+<img
+
+src={job.image}
+
+width="150"
+
+alt="logo"
+
+/>
+
+}
+
+
+
+<h3>
+🏢 {job.company}
+</h3>
+
+
+
+<p>
+🎓 Qualification:
+{job.qualification}
+</p>
+
+
+
+<p>
+📂 Category:
+{job.category}
+</p>
+
+
+
+<p>
+⚙️ Job Type:
+{job.jobType || "Not Available"}
+</p>
+
+
+
+<p>
+💰 Salary:
+{job.salary}
+</p>
+
+
+
+<p>
+📍 Location:
+{job.location}
+</p>
+
+
+
+<p>
+📅 Last Date:
+{job.lastDate || "Not Available"}
+</p>
+
+
+
+
+<button onClick={saveJob}>
+⭐ Save Job
+</button>
+
+
+
+<br/><br/>
+
+
+
+
+<a
+
+href={job.applyLink}
+
+target="_blank"
+
+rel="noreferrer"
+
+>
+
+<button>
+🚀 Apply Now
+</button>
+
+
+</a>
+
+
+
+
+<br/><br/>
+
+
+
+
+<button onClick={shareJob}>
+📤 Share Job
+</button>
+
+
+
+
+<br/><br/>
+
+
+
+
+<Link to="/">
+⬅️ Back Home
+</Link>
+
+
+
+</div>
+
+
+
+</div>
+
+
+)
+
+
+
+}
+
 
 
 export default JobDetails

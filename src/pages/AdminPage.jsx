@@ -1,25 +1,64 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+
 import AdminLogin from "../AdminLogin"
 import Admin from "../Admin"
 
+import { onAuthStateChanged } from "firebase/auth"
+import { auth } from "../firebase"
+
+
 function AdminPage({ jobList, setJobList }) {
 
-  const [login, setLogin] = useState(false)
+
+  const [user,setUser] = useState(null)
+
+
+  useEffect(()=>{
+
+
+    const unsubscribe =
+    onAuthStateChanged(
+      auth,
+      (currentUser)=>{
+
+        setUser(currentUser)
+
+      }
+    )
+
+
+    return ()=>unsubscribe()
+
+
+  },[])
+
+
 
   return (
+
     <div>
+
       {
-        login ? (
+        user ? (
+
           <Admin
-            jobList={jobList}
-            setJobList={setJobList}
+          jobList={jobList}
+          setJobList={setJobList}
           />
+
         ) : (
-          <AdminLogin setLogin={setLogin} />
+
+          <AdminLogin />
+
         )
       }
+
+
     </div>
+
   )
+
 }
+
 
 export default AdminPage

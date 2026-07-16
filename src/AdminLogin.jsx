@@ -1,36 +1,72 @@
 import { useState } from "react"
+import { signInWithEmailAndPassword } from "firebase/auth"
+
+import { auth } from "./firebase"
+
 
 function AdminLogin({ setLogin }) {
 
-  const [password, setPassword] = useState("")
+
+  const [email,setEmail] = useState("")
+
+  const [password,setPassword] = useState("")
 
 
-  const login = () => {
+  const login = async()=>{
 
-    if(password === "Saurabh@123") {
+
+    try{
+
+
+      await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      )
+
 
       setLogin(true)
 
-    } else {
 
-      alert("Wrong Password")
+      alert("Login Successful")
+
 
     }
 
+    catch(error){
+
+      console.log(error)
+
+      alert("Wrong Email or Password")
+
+    }
+
+
   }
+
 
 
   return (
 
     <div className="admin">
 
+
       <h2>Admin Login</h2>
 
+
       <input
-        type="password"
-        placeholder="Enter Password"
-        value={password}
-        onChange={(e)=>setPassword(e.target.value)}
+      type="email"
+      placeholder="Email"
+      value={email}
+      onChange={(e)=>setEmail(e.target.value)}
+      />
+
+
+      <input
+      type="password"
+      placeholder="Password"
+      value={password}
+      onChange={(e)=>setPassword(e.target.value)}
       />
 
 
@@ -38,10 +74,12 @@ function AdminLogin({ setLogin }) {
         Login
       </button>
 
+
     </div>
 
   )
 
 }
+
 
 export default AdminLogin
